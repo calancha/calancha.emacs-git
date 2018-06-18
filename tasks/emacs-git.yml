@@ -1,0 +1,94 @@
+---
+- name: Install developer tools
+  yum: name='@Development tools' state=present update_cache=yes
+  tags:
+    - emacs_requirements
+
+- name: Download Git v2
+  yum:
+    name: '{{ emacs_git_git_v2_url }}'
+    state: present
+  tags:
+    - emacs_requirements
+
+- name: Install Git v2
+  yum:
+    name: git
+    state: latest
+  tags:
+    - emacs_requirements
+
+- name: Clone Emacs repository
+  git:
+    repo: '{{ emacs_git_repository }}'
+    depth: 1
+    dest: '{{ emacs_git_deploy_to }}'
+    version: '{{ emacs_git_version }}'
+  tags:
+    - emacs_installation
+
+- name: Install libselinux-python
+  package: name='libselinux-python' state=present
+  tags:
+    - emacs_requirements
+
+- name: Download autoconf v2.65
+  get_url:
+    url: 'https://ftp.gnu.org/gnu/autoconf/{{ emacs_git_autoconf_filename }}.tar.xz'
+    dest: '{{ emacs_git_autoconf_deploy_dir }}/{{ emacs_git_autoconf_filename }}.tar.xz'
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version|int < 7
+  tags:
+    - emacs_requirements
+
+- name: Unarchive autoconf package
+  unarchive:
+    src: '{{ emacs_git_autoconf_deploy_dir }}/{{ emacs_git_autoconf_filename }}.tar.xz'
+    dest: '{{ emacs_git_autoconf_deploy_dir }}'
+    remote_src: yes
+  tags:
+    - emacs_requirements
+
+- name: Configure autoconf
+  command: './configure --prefix=/usr'
+  args:
+    chdir: '{{ emacs_git_autoconf_deploy_dir }}/{{ emacs_git_autoconf_filename }}'
+  tags:
+    - emacs_requirements
+
+- name: Install autoconf
+  make:
+    chdir: '{{ emacs_git_autoconf_deploy_dir }}/{{ emacs_git_autoconf_filename }}'
+    target: install
+  tags:
+    - emacs_requirements
+
+- name: Install ncurses-devel
+  package: name='ncurses-devel' state=present
+  tags:
+    - emacs_requirements
+
+- name: Install gnutls-devel
+  package: name='gnutls-devel' state=present
+  tags:
+    - emacs_installation
+
+- name: Configure Emacs (autogen.sh)
+  command: ./autogen.sh
+  args:
+    chdir: '{{ emacs_git_deploy_to }}'
+  tags:
+    - emacs_installation
+
+- name: Configure Emacs (configure)
+  command: './configure {{ emacs_git_configure_opts }}'
+  args:
+    chdir: '{{ emacs_git_deploy_to }}'
+  tags:
+    - emacs_installation
+
+- name: Build and Install Emacs
+  make:
+    chdir: '{{ emacs_git_deploy_to }}'
+    target: install
+  tags:
+    - emacs_installation

@@ -1,0 +1,15 @@
+---
+- shell: >
+    /usr/local/bin/emacs -batch -eval '(princ emacs-version)'
+  register: emacs_contents
+
+- name: Update emacs_version var
+  set_fact:
+    emacs_version: "{{ emacs_contents.stdout }}"
+
+- name: Update default nginx page
+  template:
+    src: nginx_emacs.j2
+    dest: '/usr/share/nginx/html/index.html'
+    mode: "u=rw,g=r,o=r"
+  notify: restart nginx

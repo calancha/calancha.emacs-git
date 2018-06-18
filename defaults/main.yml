@@ -1,0 +1,11 @@
+---
+emacs_git_repository: "git://git.sv.gnu.org/emacs.git"
+emacs_git_deploy_to: "/home/vagrant/tmp/emacs"
+# emacs_git_version: "master" # trunk version
+# emacs_git_version: "emacs-25.3"
+emacs_git_version: "emacs-26.1" # latest stable
+emacs_git_autoconf_min_version: "2.65"
+emacs_git_autoconf_filename: 'autoconf-{{ emacs_git_autoconf_min_version }}'
+emacs_git_autoconf_deploy_dir: '/home/vagrant/tmp'
+emacs_git_git_v2_url: "http://opensource.wandisco.com/centos/6/git/x86_64/wandisco-git-release-6-1.noarch.rpm"
+emacs_git_configure_opts: "--without-makeinfo --without-gif --without-jpeg"

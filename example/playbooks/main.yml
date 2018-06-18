@@ -1,0 +1,20 @@
+---
+- hosts: servers
+  become: true
+  vars: { emacs_version: "" }
+
+  roles:
+    - { role: nginxinc.nginx,
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version|int < 7,
+    tags: ['nginx_installation'] }
+
+    - { role: calancha.emacs-git,
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version|int < 7 }
+
+  tasks:
+    - { import_tasks: nginx_emacs_version.yml,
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version|int < 7 }
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted

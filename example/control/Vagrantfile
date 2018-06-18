@@ -1,0 +1,38 @@
+vagrant_user = 'vagrant'
+topdir = '/etc/ansible/roles/calancha.emacs-git'
+source_roles_dir = "#{topdir}/example/playbooks"
+target_roles_dir = "/home/#{vagrant_user}/ansiblework/playbooks"
+playbooks = [
+  'nginx_emacs_version.yml',
+  'main.yml',
+  'install_emacs.yml',
+  'install_nginx.yml',
+  'templates'
+]
+source_conf_dir = "#{topdir}/example"
+target_conf_dir = "/home/#{vagrant_user}/ansiblework"
+ansible_conf_files = [
+  'hosts',
+  'ansible.cfg'
+]
+
+Vagrant.configure(2) do |config|
+  config.vm.box = 'bento/centos-6.7'
+  config.vm.network 'public_network', ip: '192.168.1.169'
+
+  config.vm.provision 'file',
+                      source: topdir,
+                      destination: "/home/#{vagrant_user}/.ansible/roles/calancha.emacs-git"
+
+  playbooks.each do |file|
+    config.vm.provision 'file',
+                        source: "#{source_roles_dir}/#{file}",
+                        destination: "#{target_roles_dir}/#{file}"
+  end
+
+  ansible_conf_files.each do |file|
+    config.vm.provision 'file',
+                        source: "#{source_conf_dir}/#{file}",
+                        destination: "#{target_conf_dir}/#{file}"
+  end
+end

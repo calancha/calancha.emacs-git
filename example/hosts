@@ -1,0 +1,6 @@
+[controller]
+control ansible_connection=local
+
+[servers]
+server01 http_port=2201 ansible_user=vagrant
+server02 http_port=2200 ansible_user=vagrant
