@@ -2,7 +2,7 @@ emacs-git
 =========
 
 Ansible role to install Emacs from official Git repository in
-centOS 6.x machines.
+CentOS 6.x machines.
 
 
 Requirements
